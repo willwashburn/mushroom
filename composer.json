@@ -1,0 +1,37 @@
+{
+  "name": "willwashburn/mushroom",
+  "description": "expand links to their final destination",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Will Washburn",
+      "email": "will.washburn@gmail.com"
+    }
+  ],
+  "keywords": [
+    "expand",
+    "unshorten",
+    "expand link",
+    "unshorten link",
+    "expand bitly",
+    "bitly",
+    "expand url",
+    "unshorten url",
+    "link",
+    "url"
+  ],
+  "github": "https://github.com/willwashburn/mushroom",
+  "homepage": "https://github.com/willwashburn/mushroom",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "require-dev": {
+    "mockery/mockery": "~0.9",
+    "phpunit/phpunit": "~4.0"
+  },
+  "autoload": {
+    "classmap": ["src"]
+  },
+  "minimum-stability": "stable"
+}
