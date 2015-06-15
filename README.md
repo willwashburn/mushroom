@@ -7,7 +7,7 @@ Mushroom finds the final destination of a shortened (or not shortened) url.
 
 # Usage
  ```PHP
- $mushroom = new Mushroom/Mushroom();
+ $mushroom = new Mushroom\Mushroom();
 
  /// With a single bitly link
  $mushroom->expand('bit.ly/xwzfs');
