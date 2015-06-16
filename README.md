@@ -24,7 +24,8 @@ Use composer
 
 ```composer require willwashburn/mushroom```
 
-Alternatively, add ```"willwashburn/mushroom": "~0.1"``` to your composer.json
+Alternatively, add ```"willwashburn/mushroom": "~0.0.2"``` to your composer.json
 
 ## Change Log
 v0.0.1 - Basic link expanding using "get_headers"
+v0.0.2 - Basic link expanding using curl
