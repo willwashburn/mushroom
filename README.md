@@ -27,5 +27,5 @@ Use composer
 Alternatively, add ```"willwashburn/mushroom": "~0.0.2"``` to your composer.json
 
 ## Change Log
-v0.0.1 - Basic link expanding using "get_headers"
-v0.0.2 - Basic link expanding using curl
+- v0.0.1 - Basic link expanding using "get_headers"
+- v0.0.2 - Basic link expanding using curl
