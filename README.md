@@ -1,4 +1,4 @@
-# Mushroom :mushroom:
+# Mushroom :mushroom: [![Travis](https://img.shields.io/travis/willwashburn/mushroom.svg)](https://travis-ci.org/willwashburn/mushroom) [![Packagist](https://img.shields.io/packagist/dt/willwashburn/mushroom.svg)](https://packagist.org/packages/willwashburn/mushroom) [![Packagist](https://img.shields.io/packagist/v/willwashburn/mushroom.svg)](https://packagist.org/packages/willwashburn/mushroom)
 Expand a link.
 
 Mushroom finds the final destination of a shortened (or not shortened) url.
