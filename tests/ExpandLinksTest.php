@@ -45,9 +45,9 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
     public function linksProvider()
     {
         return [
-            ['http://bit.ly/1bdDlXc', 'http://www.google.com/'], // shortened
-            ['http://www.google.com', 'http://www.google.com/'], // nothing
-            ['http://pinreach.com', 'https://www.tailwindapp.com/'], //redirect
+            ['http://bit.ly/1bdDlXc', 'http://www.google.com'], // shortened
+            ['http://www.google.com', 'http://www.google.com'], // nothing
+            ['https://jigsaw.w3.org/HTTP/300/301.html','https://jigsaw.w3.org/HTTP/300/Overview.html'] // 301 redirect
         ];
     }
 
