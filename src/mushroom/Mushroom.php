@@ -1,14 +1,20 @@
 <?php namespace Mushroom;
 
+use WillWashburn\Canonical;
 use WillWashburn\Curl;
 
 /**
- * Class Mushroom
+ * Expand links to their final destination
  *
  * @package Mushroom
  */
 class Mushroom
 {
+    /**
+     * @var Canonical
+     */
+    private $canonical;
+
     /**
      * @var Curl
      */
@@ -18,32 +24,53 @@ class Mushroom
      * Mushroom constructor.
      *
      * @param Curl|null $curl
+     * @param Canonical|null $canonical
      */
-    public function __construct(Curl $curl = null)
+    public function __construct(Curl $curl = null, Canonical $canonical = null)
     {
-        $this->curl = is_null($curl) ? new Curl : $curl;
+        $this->curl      = is_null($curl) ? new Curl : $curl;
+        $this->canonical = is_null($canonical) ? new Canonical() : $canonical;
     }
 
     /**
-     * @param $urls
+     * Expands to the canonical url, according to the 'rel=canonical' tag
+     * at the end of all redirects for a given link
+     *
+     * @param       $urls
+     * @param array $options
      *
      * @return string
      */
-    public function expand($urls)
+    public function canonical($urls, array $options = [])
     {
-        if ( !is_array($urls) ) {
-            return $this->followToLocation($urls);
-        }
+        $options['canonical'] = true;
 
-        return $this->batchFollow($urls);
+        return $this->expand($urls, $options);
+
     }
 
     /**
-     * @param $urls
+     * @param       $urls
+     * @param array $options an array of options
+     *
+     * @return string
+     */
+    public function expand($urls, array $options = [])
+    {
+        if ( !is_array($urls) ) {
+            return $this->followToLocation($urls, $options);
+        }
+
+        return $this->batchFollow($urls, $options);
+    }
+
+    /**
+     * @param       $urls
+     * @param array $options
      *
      * @return array
      */
-    private function batchFollow($urls)
+    private function batchFollow($urls, array $options)
     {
         if ( empty($urls) ) {
             return [];
@@ -54,7 +81,7 @@ class Mushroom
         $x = 0;
         foreach ( $urls as $key => $url ) {
 
-            $$x = $this->getHandle($url);
+            $$x = $this->getHandle($url, $options);
 
             $this->curl->curl_multi_add_handle($mh, $$x);
 
@@ -72,7 +99,7 @@ class Mushroom
 
         foreach ( $urls as $key => $url ) {
 
-            $locations[$key] = $this->getUrlFromHandle($$y);
+            $locations[$key] = $this->getUrlFromHandle($$y, $options);
 
             $y++;
         }
@@ -85,25 +112,27 @@ class Mushroom
 
     /**
      * @param $url
+     * @param $options
      *
      * @return mixed
      */
-    private function followToLocation($url)
+    private function followToLocation($url, array $options)
     {
-        $ch = $this->getHandle($url);
+        $ch = $this->getHandle($url, $options);
         $this->curl->curl_exec($ch);
-        $url = $this->getUrlFromHandle($ch);
+        $url = $this->getUrlFromHandle($ch, $options);
         $this->curl->curl_close($ch);
 
         return $url;
     }
 
     /**
-     * @param $url
+     * @param       $url
+     * @param array $options
      *
      * @return resource
      */
-    private function getHandle($url)
+    private function getHandle($url, array $options)
     {
         $ch = $this->curl->curl_init($url);
         $this->curl->curl_setopt_array($ch, array(
@@ -118,15 +147,32 @@ class Mushroom
     }
 
     /**
-     * @param $ch
+     * @param       $ch
+     * @param array $options
      *
      * @return string
      */
-    private function getUrlFromHandle($ch)
+    private function getUrlFromHandle($ch, array $options)
     {
-        $url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        if ( array_key_exists('canonical', $options) && $options['canonical'] === true ) {
 
-        return trim($url, '/');
+            $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
+
+            if ( $url ) {
+                return $this->cleanUrl($url);
+            }
+        }
+
+        return $this->cleanUrl($this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL));
     }
 
+    /**
+     * @param $url
+     *
+     * @return string
+     */
+    private function cleanUrl($url)
+    {
+        return trim($url, '/');
+    }
 }
