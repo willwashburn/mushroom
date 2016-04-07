@@ -173,6 +173,15 @@ class Mushroom
      */
     private function cleanUrl($url)
     {
-        return trim($url, '/');
+        //remove utm params via regex replace, and cleanup and artifacts left behind afterwards
+        $url = preg_replace('/\?$/', '', preg_replace('/&$/', '', preg_replace('/utm_[^&]+&?/i', '', $url)));
+    
+        //remove any hash anchors.
+        $hash_pos = strpos($url,"#");
+        if ($hash_pos !== false) {
+            $url = substr($url, 0, $hash_pos);
+        }
+        
+        return $url;
     }
 }
