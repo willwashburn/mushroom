@@ -28,7 +28,7 @@
   "license": "MIT",
   "require": {
     "php": ">=5.4.0",
-    "willwashburn/canonical": "1.0.2",
+    "willwashburn/canonical": "1.1.0",
     "willwashburn/curl": ">=1.0"
   },
   "require-dev": {
