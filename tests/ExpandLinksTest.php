@@ -46,7 +46,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
     {
         return [
             ['http://bit.ly/1bdDlXc', 'http://www.google.com/'], // shortened
-            ['http://www.google.com', 'http://www.google.com/'], // nothing
+            ['http://www.google.com/', 'http://www.google.com/'], // nothing
             ['https://jigsaw.w3.org/HTTP/300/301.html', 'https://jigsaw.w3.org/HTTP/300/Overview.html'], // 301 redirect
             ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'] // trailing slash
         ];
