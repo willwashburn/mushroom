@@ -173,6 +173,6 @@ class Mushroom
      */
     private function cleanUrl($url)
     {
-        return trim($url, '/');
+        return $url;
     }
 }
