@@ -23,7 +23,7 @@ class Mushroom
     /**
      * Mushroom constructor.
      *
-     * @param Curl|null $curl
+     * @param Curl|null      $curl
      * @param Canonical|null $canonical
      */
     public function __construct(Curl $curl = null, Canonical $canonical = null)
@@ -159,20 +159,11 @@ class Mushroom
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ( $url ) {
-                return $this->cleanUrl($url);
+                return $url;
             }
         }
 
-        return $this->cleanUrl($this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL));
+        return $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     }
 
-    /**
-     * @param $url
-     *
-     * @return string
-     */
-    private function cleanUrl($url)
-    {
-        return trim($url, '/');
-    }
 }
