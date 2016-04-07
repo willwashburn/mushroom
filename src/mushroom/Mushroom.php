@@ -39,7 +39,7 @@ class Mushroom
      * @param       $urls
      * @param array $options
      *
-     * @return string
+     * @return string|array
      */
     public function canonical($urls, array $options = [])
     {
@@ -53,7 +53,7 @@ class Mushroom
      * @param       $urls
      * @param array $options an array of options
      *
-     * @return string
+     * @return string|array
      */
     public function expand($urls, array $options = [])
     {
@@ -114,7 +114,7 @@ class Mushroom
      * @param $url
      * @param $options
      *
-     * @return mixed
+     * @return string
      */
     private function followToLocation($url, array $options)
     {
