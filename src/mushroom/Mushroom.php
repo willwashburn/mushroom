@@ -72,7 +72,7 @@ class Mushroom
      */
     private function batchFollow($urls, array $options)
     {
-        if ( empty($urls) ) {
+        if (!$urls) {
             return [];
         }
 
