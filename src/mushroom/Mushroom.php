@@ -23,7 +23,7 @@ class Mushroom
     /**
      * Mushroom constructor.
      *
-     * @param Curl|null $curl
+     * @param Curl|null      $curl
      * @param Canonical|null $canonical
      */
     public function __construct(Curl $curl = null, Canonical $canonical = null)
@@ -39,7 +39,7 @@ class Mushroom
      * @param       $urls
      * @param array $options
      *
-     * @return string
+     * @return string|array
      */
     public function canonical($urls, array $options = [])
     {
@@ -53,7 +53,7 @@ class Mushroom
      * @param       $urls
      * @param array $options an array of options
      *
-     * @return string
+     * @return string|array
      */
     public function expand($urls, array $options = [])
     {
@@ -72,7 +72,7 @@ class Mushroom
      */
     private function batchFollow($urls, array $options)
     {
-        if ( empty($urls) ) {
+        if (!$urls) {
             return [];
         }
 
@@ -114,7 +114,7 @@ class Mushroom
      * @param $url
      * @param $options
      *
-     * @return mixed
+     * @return string
      */
     private function followToLocation($url, array $options)
     {
@@ -159,20 +159,11 @@ class Mushroom
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ( $url ) {
-                return $this->cleanUrl($url);
+                return $url;
             }
         }
 
-        return $this->cleanUrl($this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL));
+        return $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     }
 
-    /**
-     * @param $url
-     *
-     * @return string
-     */
-    private function cleanUrl($url)
-    {
-        return trim($url, '/');
-    }
 }
