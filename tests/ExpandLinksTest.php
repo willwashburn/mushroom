@@ -49,7 +49,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['https://www.google.com/', 'https://www.google.com/'], // nothing
             ['https://jigsaw.w3.org/HTTP/300/301.html', 'https://jigsaw.w3.org/HTTP/300/Overview.html'], // 301 redirect
             ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
-            ['http://wp.me//p7gsPW-Gi', 'http://traveltalesoflife.com/2014/06/06/travel-theme-unexpected-the-co-ed-turkish-bath/'] //
+            ['http://wp.me//p7gsPW-Gi', 'http://traveltalesoflife.com/2014/06/06/travel-theme-unexpected-the-co-ed-turkish-bath/'],
+            ['http://post.pinterest.com/e/knpIwhPQnnQeAVjlwvbzPQ~~/AAAAAQA~/RgRXYq8TP0EIAmq60hKe0l5IFUNPTlZFUlNBVElPTl9TRU5EX1BJTkIKAAkTKoBVtEqqClIfV2lsbHdhc2hidXJuK2ZyZXNobmVzc0B0d2FwcC5pdAlRBAAAAABEGWh0dHA6Ly9ibG9nLnBpbnRlcmVzdC5jb21HQnsidCI6IjM0ZDY0MWVjNzAxZDQ4ZDA4YThmOTdmNmRhZmQzZTkxIiwiYmluZGluZyI6Im5vdGlmaWNhdGlvbnMifQ~~','https://blog.pinterest.com/en']
         ];
     }
 

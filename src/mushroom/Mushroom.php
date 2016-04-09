@@ -44,9 +44,6 @@ class Mushroom
     public function canonical($urls, array $options = [])
     {
         $options['canonical'] = true;
-        $options['curl_opts']=[
-            CURLOPT_NOBODY => false
-        ];
 
         return $this->expand($urls, $options);
 
@@ -146,7 +143,6 @@ class Mushroom
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYHOST => false, // suppress certain SSL errors
             CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_NOBODY         => true,
 
             // Some hosts don't respond well if you're a bot
             // so we lie
