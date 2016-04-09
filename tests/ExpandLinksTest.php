@@ -45,10 +45,11 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
     public function linksProvider()
     {
         return [
-            ['http://bit.ly/1bdDlXc', 'http://www.google.com/'], // shortened
-            ['http://www.google.com/', 'http://www.google.com/'], // nothing
+            ['http://bit.ly/1bdDlXc', 'https://www.google.com/?gws_rd=ssl'], // shortened
+            ['https://www.google.com/', 'https://www.google.com/'], // nothing
             ['https://jigsaw.w3.org/HTTP/300/301.html', 'https://jigsaw.w3.org/HTTP/300/Overview.html'], // 301 redirect
-            ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'] // trailing slash
+            ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
+            ['http://wp.me//p7gsPW-Gi', 'http://traveltalesoflife.com/2014/06/06/travel-theme-unexpected-the-co-ed-turkish-bath/'] //
         ];
     }
 

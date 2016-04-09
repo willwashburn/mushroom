@@ -28,9 +28,10 @@ Use composer
 
 ```composer require willwashburn/mushroom```
 
-Alternatively, add ```"willwashburn/mushroom": ">=2.0.0"``` to your composer.json
+Alternatively, add ```"willwashburn/mushroom": ">=2.1.0"``` to your composer.json
 
 ## Change Log
+- v2.1.0 - Allow setting curl handle options; set user agent as default 
 - v2.0.0 - **Breaking change**: stopped removing slashes from the end of urls
 - v1.1.0 - Add ability to find canonical url from tags in body of returned page
 - v1.0.0 - Expand multiple links using multi_curl_* for faster responses

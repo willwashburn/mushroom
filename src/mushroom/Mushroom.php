@@ -44,6 +44,9 @@ class Mushroom
     public function canonical($urls, array $options = [])
     {
         $options['canonical'] = true;
+        $options['curl_opts']=[
+            CURLOPT_NOBODY => false
+        ];
 
         return $this->expand($urls, $options);
 
@@ -135,13 +138,30 @@ class Mushroom
     private function getHandle($url, array $options)
     {
         $ch = $this->curl->curl_init($url);
-        $this->curl->curl_setopt_array($ch, array(
+
+        // Sane default options for the handle
+        $curl_opts = [
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_MAXREDIRS      => 100,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYHOST => false, // suppress certain SSL errors
             CURLOPT_SSL_VERIFYPEER => false,
-        ));
+            CURLOPT_NOBODY         => true,
+
+            // Some hosts don't respond well if you're a bot
+            // so we lie
+            CURLOPT_USERAGENT      => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
+            CURLOPT_AUTOREFERER    => true
+        ];
+
+        // If we passed in other handle options, add them here
+        if ( isset($options['curl_opts']) ) {
+            $curl_opts = $options['curl_opts'] + $curl_opts;
+        }
+
+        $this->curl->curl_setopt_array($ch, $curl_opts);
+
+
 
         return $ch;
     }
