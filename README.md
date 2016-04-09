@@ -5,7 +5,7 @@ Mushroom finds the final destination of a shortened (or not shortened) url.
 
 > Note: Not for psychedelic drug use
 
-# Usage
+## Usage
  ```PHP
  $mushroom = new Mushroom\Mushroom();
 
@@ -23,7 +23,7 @@ Mushroom finds the final destination of a shortened (or not shortened) url.
 
 ```
 
-# Installation
+## Installation
 Use composer
 
 ```composer require willwashburn/mushroom```
