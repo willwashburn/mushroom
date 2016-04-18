@@ -72,7 +72,7 @@ class Mushroom
      */
     private function batchFollow($urls, array $options)
     {
-        if (!$urls) {
+        if ( !$urls ) {
             return [];
         }
 
@@ -158,7 +158,6 @@ class Mushroom
         $this->curl->curl_setopt_array($ch, $curl_opts);
 
 
-
         return $ch;
     }
 
@@ -172,14 +171,53 @@ class Mushroom
     {
         if ( array_key_exists('canonical', $options) && $options['canonical'] === true ) {
 
+            // Canonical will read tags to find rel=canonical and og tags
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ( $url ) {
-                return $url;
+
+                // Canonical urls should have a scheme; if they do not, we'll
+                // use the effective url from the curl request to determine
+                // what it should be
+                $scheme = parse_url($url, PHP_URL_SCHEME);
+
+                // If there is a scheme, we can return the url as is
+                if ( $scheme ) {
+                    return $url;
+                }
+
+                $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+                $parsed           = parse_url($url);
+                $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
+
+                // Create a string of the url again
+                return $this->unparse_url($parsed);
             }
         }
 
         return $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     }
 
+    /**
+     * Puts a parsed url back together again
+     *
+     * @param $parsed_url
+     *
+     * @return string
+     */
+    private function unparse_url($parsed_url)
+    {
+        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
+        $pass     = ($user || $pass) ? "$pass@" : '';
+        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+
+        return "$scheme$user$pass$host$port$path$query$fragment";
+    }
 }
