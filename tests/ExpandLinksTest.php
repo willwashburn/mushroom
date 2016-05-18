@@ -95,7 +95,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
     public function test_setting_curl_options_works()
     {
-
         $expected_curl_opts = [
             CURLOPT_FOLLOWLOCATION => false,
         ];
@@ -109,9 +108,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                ->shouldReceive('curl_setopt_array')
                ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {
 
-                   foreach ( array_keys($expected_curl_opts) as $key ) {
-
-                       if ( $arg[$key] != $expected_curl_opts[$key] ) {
+                   foreach (array_keys($expected_curl_opts) as $key) {
+                       if ($arg[$key] != $expected_curl_opts[$key]) {
                            return false;
                        }
                    }
@@ -119,7 +117,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                    return true;
                }))
                ->getMock();
-
 
         $mushroom = new \Mushroom\Mushroom($curl);
 
