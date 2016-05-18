@@ -100,7 +100,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         );
 
         $curl
-            = M::mock(\WillWashburn\Curl::class)
+            = M::mock('\WillWashburn\Curl')
                ->shouldReceive('curl_init')->getMock()
                ->shouldReceive('curl_exec')->getMock()
                ->shouldReceive('curl_close')->getMock()
