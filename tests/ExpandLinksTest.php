@@ -1,5 +1,7 @@
 <?php
 
+use Mockery as M;
+
 /**
  * Class ExpandLinkTest.
  */
@@ -89,5 +91,38 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://www.willwashburn.com/?foo', 'http://www.willwashburn.com/?foo'], //no tags
             ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
         ];
+    }
+
+    public function test_setting_curl_options_works()
+    {
+
+        $expected_curl_opts = [
+            CURLOPT_FOLLOWLOCATION => false,
+        ];
+
+        $curl
+            = M::mock(\WillWashburn\Curl::class)
+               ->shouldReceive('curl_init')->getMock()
+               ->shouldReceive('curl_exec')->getMock()
+               ->shouldReceive('curl_close')->getMock()
+               ->shouldReceive('curl_getinfo')->getMock()
+               ->shouldReceive('curl_setopt_array')
+               ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {
+
+                   foreach ( array_keys($expected_curl_opts) as $key ) {
+
+                       if ( $arg[$key] != $expected_curl_opts[$key] ) {
+                           return false;
+                       }
+                   }
+
+                   return true;
+               }))
+               ->getMock();
+
+
+        $mushroom = new \Mushroom\Mushroom($curl);
+
+        $mushroom->expand('http://www.foobar.com', ['curl_opts' => $expected_curl_opts]);
     }
 }
