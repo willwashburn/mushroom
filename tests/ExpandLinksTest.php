@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Class ExpandLinkTest
+ * Class ExpandLinkTest.
  */
 class ExpandLinkTest extends PHPUnit_Framework_TestCase
 {
     /**
-     *
      * @dataProvider linksProvider
      *
      * @param $expected
@@ -18,7 +17,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $mushroom->expand($input));
     }
-
 
     public function test_expand_expands_array_of_links()
     {
@@ -34,9 +32,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             return $value[1];
         }, $links);
 
-
         $this->assertEquals($expected, $mushroom->expand($inputs));
-
     }
 
     /**
@@ -53,7 +49,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         ];
     }
 
-
     /**
      * @dataProvider canonicalLinksProvider
      *
@@ -62,7 +57,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
      */
     public function test_expand_single_canonical_link($input, $expected)
     {
-
         $mushroom = new \Mushroom\Mushroom();
 
         $this->assertEquals($expected, $mushroom->canonical($input));
@@ -70,7 +64,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
     public function test_expand_multiple_canonical_link()
     {
-
         $mushroom = new \Mushroom\Mushroom();
         $links    = $this->canonicalLinksProvider();
 
@@ -83,9 +76,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         }, $links);
 
         $this->assertEquals($expected, $mushroom->canonical($inputs));
-
     }
-
 
     /**
      * @return array
@@ -96,8 +87,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0/?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://www.willwashburn.com/?foo', 'http://www.willwashburn.com/?foo'], //no tags
-            ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/','http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'] // protocol issues
+            ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
         ];
     }
-
 }
