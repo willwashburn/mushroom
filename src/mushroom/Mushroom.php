@@ -4,9 +4,7 @@ use WillWashburn\Canonical;
 use WillWashburn\Curl;
 
 /**
- * Expand links to their final destination
- *
- * @package Mushroom
+ * Expand links to their final destination.
  */
 class Mushroom
 {
@@ -28,13 +26,13 @@ class Mushroom
      */
     public function __construct(Curl $curl = null, Canonical $canonical = null)
     {
-        $this->curl      = is_null($curl) ? new Curl : $curl;
+        $this->curl      = is_null($curl) ? new Curl() : $curl;
         $this->canonical = is_null($canonical) ? new Canonical() : $canonical;
     }
 
     /**
      * Expands to the canonical url, according to the 'rel=canonical' tag
-     * at the end of all redirects for a given link
+     * at the end of all redirects for a given link.
      *
      * @param       $urls
      * @param array $options
@@ -46,7 +44,6 @@ class Mushroom
         $options['canonical'] = true;
 
         return $this->expand($urls, $options);
-
     }
 
     /**
@@ -57,7 +54,7 @@ class Mushroom
      */
     public function expand($urls, array $options = [])
     {
-        if ( !is_array($urls) ) {
+        if (!is_array($urls)) {
             return $this->followToLocation($urls, $options);
         }
 
@@ -72,15 +69,14 @@ class Mushroom
      */
     private function batchFollow($urls, array $options)
     {
-        if ( !$urls ) {
+        if (!$urls) {
             return [];
         }
 
         $mh = $this->curl->curl_multi_init();
 
         $x = 0;
-        foreach ( $urls as $key => $url ) {
-
+        foreach ($urls as $key => $url) {
             $$x = $this->getHandle($url, $options);
 
             $this->curl->curl_multi_add_handle($mh, $$x);
@@ -91,19 +87,17 @@ class Mushroom
         $running = null;
         do {
             $this->curl->curl_multi_exec($mh, $running);
-        } while ( $running );
+        } while ($running);
 
         ///add each result to an array
         $y         = 0;
-        $locations = array();
+        $locations = [];
 
-        foreach ( $urls as $key => $url ) {
-
+        foreach ($urls as $key => $url) {
             $locations[$key] = $this->getUrlFromHandle($$y, $options);
 
             $y++;
         }
-
 
         $this->curl->curl_multi_close($mh);
 
@@ -147,16 +141,15 @@ class Mushroom
             // Some hosts don't respond well if you're a bot
             // so we lie
             CURLOPT_USERAGENT      => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
-            CURLOPT_AUTOREFERER    => true
+            CURLOPT_AUTOREFERER    => true,
         ];
 
         // If we passed in other handle options, add them here
-        if ( isset($options['curl_opts']) ) {
+        if (isset($options['curl_opts'])) {
             $curl_opts = $options['curl_opts'] + $curl_opts;
         }
 
         $this->curl->curl_setopt_array($ch, $curl_opts);
-
 
         return $ch;
     }
@@ -169,12 +162,12 @@ class Mushroom
      */
     private function getUrlFromHandle($ch, array $options)
     {
-        if ( array_key_exists('canonical', $options) && $options['canonical'] === true ) {
+        if (array_key_exists('canonical', $options) && $options['canonical'] === true) {
 
             // Canonical will read tags to find rel=canonical and og tags
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
-            if ( $url ) {
+            if ($url) {
 
                 // Canonical urls should have a scheme; if they do not, we'll
                 // use the effective url from the curl request to determine
@@ -182,7 +175,7 @@ class Mushroom
                 $scheme = parse_url($url, PHP_URL_SCHEME);
 
                 // If there is a scheme, we can return the url as is
-                if ( $scheme ) {
+                if ($scheme) {
                     return $url;
                 }
 
@@ -200,7 +193,7 @@ class Mushroom
     }
 
     /**
-     * Puts a parsed url back together again
+     * Puts a parsed url back together again.
      *
      * @param $parsed_url
      *
