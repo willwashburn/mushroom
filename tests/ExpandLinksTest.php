@@ -88,7 +88,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         return [
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0/?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
-            ['http://www.willwashburn.com/?foo', 'http://www.willwashburn.com/?foo'], //no tags
+            ['http://willwashburn.com/?foo', 'http://willwashburn.com/?foo'], //no tags
             ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
         ];
     }
