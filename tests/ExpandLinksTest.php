@@ -107,7 +107,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                ->shouldReceive('curl_getinfo')->getMock()
                ->shouldReceive('curl_setopt_array')
                ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {
-
                    foreach (array_keys($expected_curl_opts) as $key) {
                        if ($arg[$key] != $expected_curl_opts[$key]) {
                            return false;
