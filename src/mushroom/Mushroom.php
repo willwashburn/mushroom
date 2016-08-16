@@ -169,20 +169,28 @@ class Mushroom
 
             if ($url) {
 
-                // Canonical urls should have a scheme; if they do not, we'll
-                // use the effective url from the curl request to determine
-                // what it should be
+                // Canonical urls should have a scheme and a host;
+                // if they do not, we'll use the effective url from the curl
+                // request to determine what it should be
                 $scheme = parse_url($url, PHP_URL_SCHEME);
+                $host = parse_url($url, PHP_URL_HOST);
 
                 // If there is a scheme, we can return the url as is
-                if ($scheme) {
+                if ($scheme && $host) {
                     return $url;
                 }
 
                 $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
                 $parsed           = parse_url($url);
-                $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
+
+                if (!$scheme) {
+                    $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
+                }
+
+                if(!$host) {
+                    $parsed['host'] = parse_url($effective_url, PHP_URL_HOST);
+                }
 
                 // Create a string of the url again
                 return $this->unparse_url($parsed);
