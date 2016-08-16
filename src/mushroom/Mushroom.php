@@ -173,7 +173,7 @@ class Mushroom
                 // if they do not, we'll use the effective url from the curl
                 // request to determine what it should be
                 $scheme = parse_url($url, PHP_URL_SCHEME);
-                $host = parse_url($url, PHP_URL_HOST);
+                $host   = parse_url($url, PHP_URL_HOST);
 
                 // If there is a scheme, we can return the url as is
                 if ($scheme && $host) {
@@ -188,7 +188,7 @@ class Mushroom
                     $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
                 }
 
-                if(!$host) {
+                if (!$host) {
                     $parsed['host'] = parse_url($effective_url, PHP_URL_HOST);
                 }
 
