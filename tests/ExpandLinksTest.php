@@ -96,9 +96,9 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
     public function test_setting_curl_options_works()
     {
-        $expected_curl_opts = array(
+        $expected_curl_opts = [
             CURLOPT_FOLLOWLOCATION => false,
-        );
+        ];
 
         $curl
             = M::mock('\WillWashburn\Curl')
