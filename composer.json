@@ -33,7 +33,12 @@
   },
   "require-dev": {
     "mockery/mockery": "~0.9",
-    "phpunit/phpunit": "~4.0"
+    "phpunit/phpunit": "~4.0",
+    "squizlabs/php_codesniffer": "3.*"
+  },
+  "scripts": {
+    "fix": "vendor/bin/phpcbf src/ tests/*.php --standard=PSR2",
+    "test": "vendor/bin/phpcs src/ --standard=PSR2 && vendor/bin/phpunit"
   },
   "autoload": {
     "classmap": [

@@ -46,8 +46,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://bit.ly/1bdDlXc', 'https://www.google.com/?gws_rd=ssl'], // shortened
             ['https://www.google.com/', 'https://www.google.com/'], // nothing
             ['https://jigsaw.w3.org/HTTP/300/301.html', 'https://jigsaw.w3.org/HTTP/300/Overview.html'], // 301 redirect
-            ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
-            ['http://wp.me//p7gsPW-Gi', 'http://traveltalesoflife.com/2014/06/06/travel-theme-unexpected-the-co-ed-turkish-bath/'],
+            ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'https://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
+            ['http://wp.me//p7gsPW-Gi', 'https://traveltalesoflife.com/travel-theme-unexpected-the-co-ed-turkish-bath/'],
         ];
     }
 
@@ -86,10 +86,10 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
     public function canonicalLinksProvider()
     {
         return [
-            ['http://blog.tailwindapp.com/tailwind-publisher-2-0/?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
-            ['http://blog.tailwindapp.com/tailwind-publisher-2-0?foo=foobar', 'http://blog.tailwindapp.com/tailwind-publisher-2-0/'],
+            ['http://blog.tailwindapp.com/tailwind-publisher-2-0/?foo=foobar', 'https://blog.tailwindapp.com/tailwind-publisher-2-0/'],
+            ['http://blog.tailwindapp.com/tailwind-publisher-2-0?foo=foobar', 'https://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://www.willwashburn.com/?foo', 'http://willwashburn.com/?foo'], //no tags
-            ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
+            ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'https://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
             ['https://vimeo.com/63823593', 'https://vimeo.com/63823593'], // canonical is relative
         ];
     }
@@ -108,11 +108,11 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                ->shouldReceive('curl_getinfo')->getMock()
                ->shouldReceive('curl_setopt_array')
                ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {
-                   foreach (array_keys($expected_curl_opts) as $key) {
-                       if ($arg[$key] != $expected_curl_opts[$key]) {
-                           return false;
-                       }
-                   }
+                foreach (array_keys($expected_curl_opts) as $key) {
+                    if ($arg[$key] != $expected_curl_opts[$key]) {
+                        return false;
+                    }
+                }
 
                    return true;
                }))

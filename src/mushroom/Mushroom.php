@@ -140,6 +140,7 @@ class Mushroom
 
             // Some hosts don't respond well if you're a bot
             // so we lie
+            // @codingStandardsIgnoreLine
             CURLOPT_USERAGENT      => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
             CURLOPT_AUTOREFERER    => true,
         ];
@@ -163,12 +164,10 @@ class Mushroom
     private function getUrlFromHandle($ch, array $options)
     {
         if (array_key_exists('canonical', $options) && $options['canonical'] === true) {
-
             // Canonical will read tags to find rel=canonical and og tags
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ($url) {
-
                 // Canonical urls should have a scheme and a host;
                 // if they do not, we'll use the effective url from the curl
                 // request to determine what it should be
@@ -193,7 +192,7 @@ class Mushroom
                 }
 
                 // Create a string of the url again
-                return $this->unparse_url($parsed);
+                return $this->unparseUrl($parsed);
             }
         }
 
@@ -207,7 +206,7 @@ class Mushroom
      *
      * @return string
      */
-    private function unparse_url($parsed_url)
+    private function unparseUrl($parsed_url)
     {
         $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
         $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
