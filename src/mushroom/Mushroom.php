@@ -1,6 +1,6 @@
 <?php namespace Mushroom;
 
-use WillWashburn\Canonical;
+use Canonical\Canonical;
 use WillWashburn\Curl;
 
 /**
@@ -35,39 +35,39 @@ class Mushroom
      * at the end of all redirects for a given link.
      *
      * @param       $urls
-     * @param array $options
+     * @param array $curlOptions
      *
      * @return string|array
      */
-    public function canonical($urls, array $options = [])
+    public function canonical($urls, array $curlOptions = [])
     {
-        $options['canonical'] = true;
-
-        return $this->expand($urls, $options);
+        return $this->expand($urls, $curlOptions, $canonical = true);
     }
 
     /**
      * @param       $urls
-     * @param array $options an array of options
+     * @param array $curlOptions
+     * @param bool  $canonical
      *
      * @return string|array
      */
-    public function expand($urls, array $options = [])
+    public function expand($urls, array $curlOptions = [], $canonical = false)
     {
         if (!is_array($urls)) {
-            return $this->followToLocation($urls, $options);
+            return $this->followToLocation($urls, $curlOptions, $canonical);
         }
 
-        return $this->batchFollow($urls, $options);
+        return $this->batchFollow($urls, $curlOptions, $canonical);
     }
 
     /**
      * @param       $urls
-     * @param array $options
+     * @param       $curlOptions
+     * @param       $findCanonical
      *
      * @return array
      */
-    private function batchFollow($urls, array $options)
+    private function batchFollow($urls, $curlOptions, $findCanonical)
     {
         if (!$urls) {
             return [];
@@ -77,7 +77,7 @@ class Mushroom
 
         $x = 0;
         foreach ($urls as $key => $url) {
-            $$x = $this->getHandle($url, $options);
+            $$x = $this->getHandle($url, $curlOptions);
 
             $this->curl->curl_multi_add_handle($mh, $$x);
 
@@ -94,7 +94,7 @@ class Mushroom
         $locations = [];
 
         foreach ($urls as $key => $url) {
-            $locations[$key] = $this->getUrlFromHandle($$y, $options);
+            $locations[$key] = $this->getUrlFromHandle($$y, $findCanonical);
 
             $y++;
         }
@@ -105,16 +105,17 @@ class Mushroom
     }
 
     /**
-     * @param $url
-     * @param $options
+     * @param string $url
+     * @param array  $curlOptions
+     * @param bool   $findCanonical
      *
      * @return string
      */
-    private function followToLocation($url, array $options)
+    private function followToLocation($url, array $curlOptions, $findCanonical)
     {
-        $ch = $this->getHandle($url, $options);
+        $ch = $this->getHandle($url, $curlOptions);
         $this->curl->curl_exec($ch);
-        $url = $this->getUrlFromHandle($ch, $options);
+        $url = $this->getUrlFromHandle($ch, $findCanonical);
         $this->curl->curl_close($ch);
 
         return $url;
@@ -122,11 +123,11 @@ class Mushroom
 
     /**
      * @param       $url
-     * @param array $options
+     * @param array $curlOptions
      *
      * @return resource
      */
-    private function getHandle($url, array $options)
+    private function getHandle($url, array $curlOptions = [])
     {
         $ch = $this->curl->curl_init($url);
 
@@ -138,16 +139,15 @@ class Mushroom
             CURLOPT_SSL_VERIFYHOST => false, // suppress certain SSL errors
             CURLOPT_SSL_VERIFYPEER => false,
 
-            // Some hosts don't respond well if you're a bot
-            // so we lie
+            // Some hosts don't respond well if you're a bot so we lie
             // @codingStandardsIgnoreLine
             CURLOPT_USERAGENT      => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
             CURLOPT_AUTOREFERER    => true,
         ];
 
         // If we passed in other handle options, add them here
-        if (isset($options['curl_opts'])) {
-            $curl_opts = $options['curl_opts'] + $curl_opts;
+        if ($curlOptions) {
+            $curl_opts = $curlOptions + $curl_opts;
         }
 
         $this->curl->curl_setopt_array($ch, $curl_opts);
@@ -156,14 +156,14 @@ class Mushroom
     }
 
     /**
-     * @param       $ch
-     * @param array $options
+     * @param resource $ch
+     * @param bool     $findCanonical
      *
      * @return string
      */
-    private function getUrlFromHandle($ch, array $options)
+    private function getUrlFromHandle($ch, $findCanonical)
     {
-        if (array_key_exists('canonical', $options) && $options['canonical'] === true) {
+        if ($findCanonical) {
             // Canonical will read tags to find rel=canonical and og tags
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
@@ -181,7 +181,7 @@ class Mushroom
 
                 $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
-                $parsed           = parse_url($url);
+                $parsed = parse_url($url);
 
                 if (!$scheme) {
                     $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);

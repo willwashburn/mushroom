@@ -23,13 +23,12 @@
     "resolver",
     "resolve url"
   ],
-  "github": "https://github.com/willwashburn/mushroom",
   "homepage": "https://github.com/willwashburn/mushroom",
   "license": "MIT",
   "require": {
     "php": ">=5.4.0",
-    "willwashburn/canonical": ">=1.1",
-    "willwashburn/curl": ">=1.0"
+    "willwashburn/canonical": "~2",
+    "willwashburn/curl": "~1"
   },
   "require-dev": {
     "mockery/mockery": "~0.9",

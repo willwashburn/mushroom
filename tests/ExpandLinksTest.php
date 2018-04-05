@@ -120,6 +120,6 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
         $mushroom = new \Mushroom\Mushroom($curl);
 
-        $mushroom->expand('http://www.foobar.com', ['curl_opts' => $expected_curl_opts]);
+        $mushroom->expand('http://www.foobar.com', $expected_curl_opts);
     }
 }
