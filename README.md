@@ -28,9 +28,10 @@ Use composer
 
 ```composer require willwashburn/mushroom```
 
-Alternatively, add ```"willwashburn/mushroom": "~2.3"``` to your composer.json
+Alternatively, add ```"willwashburn/mushroom": "~2.4"``` to your composer.json
 
 ## Change Log
+- v2.4.0 - Follow http-refresh html meta tags
 - v2.3.0 - Ensure that canonical urls have a host
 - v2.2.0 - Ensure that canonical urls have a scheme
 - v2.1.1 - Remove CURLOPT_NOBODY from defaults
