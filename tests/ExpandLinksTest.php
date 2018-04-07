@@ -48,6 +48,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['https://jigsaw.w3.org/HTTP/300/301.html', 'https://jigsaw.w3.org/HTTP/300/Overview.html'], // 301 redirect
             ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'https://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
             ['http://wp.me//p7gsPW-Gi', 'https://traveltalesoflife.com/travel-theme-unexpected-the-co-ed-turkish-bath/'],
+            ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
         ];
     }
 
@@ -91,6 +92,9 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://www.willwashburn.com/?foo', 'http://willwashburn.com/?foo'], //no tags
             ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'https://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
             ['https://vimeo.com/63823593', 'https://vimeo.com/63823593'], // canonical is relative
+
+            /// http-refresh links
+            ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
         ];
     }
 
@@ -103,8 +107,10 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         $curl
             = M::mock('\WillWashburn\Curl')
                ->shouldReceive('curl_init')->getMock()
-               ->shouldReceive('curl_exec')->getMock()
-               ->shouldReceive('curl_close')->getMock()
+               ->shouldReceive('curl_multi_init')->getMock()
+               ->shouldReceive('curl_multi_add_handle')->getMock()
+               ->shouldReceive('curl_multi_exec')->getMock()
+               ->shouldReceive('curl_multi_close')->getMock()
                ->shouldReceive('curl_getinfo')->getMock()
                ->shouldReceive('curl_setopt_array')
                ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {

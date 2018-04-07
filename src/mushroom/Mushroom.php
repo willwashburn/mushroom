@@ -41,33 +41,48 @@ class Mushroom
      */
     public function canonical($urls, array $curlOptions = [])
     {
-        return $this->expand($urls, $curlOptions, $canonical = true);
+        return $this->expand($urls, $curlOptions, $followHttpRefresh = true, $findCanonical = true);
     }
 
     /**
-     * @param       $urls
-     * @param array $curlOptions
-     * @param bool  $canonical
+     * @param array|string $urls                The url or urls  to unfurl
+     *
+     * @param array        $curlOptions         Custom curl options that can be passed in
+     *
+     * @param bool         $followHttpRefresh   If the response is a 200 response but
+     *                                          includes the meta tag http-refresh, follow
+     *                                          that link to further expand the url
+     *
+     * @param bool         $findCanonical       If the response includes a meta tag for the
+     *                                          canonical url, return that
      *
      * @return string|array
      */
-    public function expand($urls, array $curlOptions = [], $canonical = false)
+    public function expand($urls, array $curlOptions = [], $followHttpRefresh = true, $findCanonical = false)
     {
-        if (!is_array($urls)) {
-            return $this->followToLocation($urls, $curlOptions, $canonical);
+        $single = !is_array($urls);
+
+        $response =  $this->batchFollow($single ? [$urls] : $urls, $curlOptions, $followHttpRefresh, $findCanonical);
+
+        if ($single) {
+            return $response[0];
         }
 
-        return $this->batchFollow($urls, $curlOptions, $canonical);
+        return $response;
     }
 
     /**
-     * @param       $urls
-     * @param       $curlOptions
-     * @param       $findCanonical
+     * @param array $urls              The urls to unfurl
+     * @param array $curlOptions       Custom curl options that can be passed in
+     * @param bool  $followHttpRefresh If the response is a 200 response but
+     *                                 includes the meta tag http-refresh, follow
+     *                                 that link to further expand the url
+     * @param bool  $findCanonical     If the response includes a meta tag for the
+     *                                 canonical url, return that
      *
      * @return array
      */
-    private function batchFollow($urls, $curlOptions, $findCanonical)
+    private function batchFollow($urls, $curlOptions, $followHttpRefresh, $findCanonical)
     {
         if (!$urls) {
             return [];
@@ -89,36 +104,37 @@ class Mushroom
             $this->curl->curl_multi_exec($mh, $running);
         } while ($running);
 
-        ///add each result to an array
         $y         = 0;
         $locations = [];
 
         foreach ($urls as $key => $url) {
-            $locations[$key] = $this->getUrlFromHandle($$y, $findCanonical);
+            $locations[$key] = $this->getUrlFromHandle($$y, $followHttpRefresh, $findCanonical);
 
             $y++;
         }
 
         $this->curl->curl_multi_close($mh);
 
+        if ($followHttpRefresh) {
+            $retries = [];
+
+            foreach ($locations as $key => $url) {
+                if (!$url['refresh']) {
+                    $locations[$key] = $url['url'];
+                } else {
+                    $retries[$key] = $url['url'];
+                }
+            }
+
+            if ($retries) {
+                $retried = $this->batchFollow($retries, $curlOptions, false, $findCanonical);
+                foreach ($retries as $key => $url) {
+                    $locations[$key] = $retried[$key]['url'];
+                }
+            }
+        }
+
         return $locations;
-    }
-
-    /**
-     * @param string $url
-     * @param array  $curlOptions
-     * @param bool   $findCanonical
-     *
-     * @return string
-     */
-    private function followToLocation($url, array $curlOptions, $findCanonical)
-    {
-        $ch = $this->getHandle($url, $curlOptions);
-        $this->curl->curl_exec($ch);
-        $url = $this->getUrlFromHandle($ch, $findCanonical);
-        $this->curl->curl_close($ch);
-
-        return $url;
     }
 
     /**
@@ -157,17 +173,48 @@ class Mushroom
 
     /**
      * @param resource $ch
+     * @param bool     $followHttpRefresh
      * @param bool     $findCanonical
      *
-     * @return string
+     * @return array
      */
-    private function getUrlFromHandle($ch, $findCanonical)
+    private function getUrlFromHandle($ch, $followHttpRefresh, $findCanonical)
     {
+        if ($followHttpRefresh) {
+            $httpStatusCode = $this->curl->curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if ($httpStatusCode === 200) {
+                /*
+                 * Some HTML pages use a meta refresh tag as redirection.
+                 *
+                 * i.e.
+                 * <meta http-equiv="refresh" content="5; url=http://example.com/">
+                 *
+                 * Would redirect to http://example.com/ after 5 seconds.
+                 */
+                $url = $this->canonical->url(
+                    $this->curl->curl_multi_getcontent($ch),
+                    [
+                        'http-refresh' => ['meta[http-equiv="refresh"]', 'content'],
+                    ]
+                );
+
+                if ($url) {
+                    return [
+                        'refresh' => true,
+                        'url'     => $url->beforeCleaning(),
+                    ];
+                }
+            }
+        }
+
         if ($findCanonical) {
             // Canonical will read tags to find rel=canonical and og tags
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ($url) {
+                $url = $url->withoutUtmParamsAndHashAnchors();
+
                 // Canonical urls should have a scheme and a host;
                 // if they do not, we'll use the effective url from the curl
                 // request to determine what it should be
@@ -176,7 +223,10 @@ class Mushroom
 
                 // If there is a scheme, we can return the url as is
                 if ($scheme && $host) {
-                    return $url;
+                    return [
+                        'refresh' => false,
+                        'url'     => $url,
+                    ];
                 }
 
                 $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -192,11 +242,17 @@ class Mushroom
                 }
 
                 // Create a string of the url again
-                return $this->unparseUrl($parsed);
+                return [
+                    'refresh' => false,
+                    'url'     => $this->unparseUrl($parsed),
+                ];
             }
         }
 
-        return $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        return [
+            'refresh' => false,
+            'url'     => $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL),
+        ];
     }
 
     /**
