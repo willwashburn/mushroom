@@ -200,9 +200,21 @@ class Mushroom
                 );
 
                 if ($url) {
+                    // The returned object from canonical is going to be a "url" object
+                    // By default, this object returns a "cleaned" url, or one that
+                    // has the hash anchors and utm_parameters removed. We use this
+                    // method to get the url without that cleaning process as we
+                    // don't believe a non canonical redirect should be stripped or
+                    // modified in any way.
+                    $url = $url->beforeCleaning();
+
+                    // Some http-equiv refresh tags will be for relative links and
+                    // we want to ensure that they keep the appropriate host+domain
+                    $url = $this->ensureSchemeAndHost($ch, $url);
+
                     return [
                         'refresh' => true,
-                        'url'     => $url->beforeCleaning(),
+                        'url'     => $url
                     ];
                 }
             }
@@ -213,38 +225,18 @@ class Mushroom
             $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
 
             if ($url) {
+                // Canonical urls should not include utm params or hash anchors
+                // since those are used for tracking/display and should not
+                // impact the content
                 $url = $url->withoutUtmParamsAndHashAnchors();
 
-                // Canonical urls should have a scheme and a host;
-                // if they do not, we'll use the effective url from the curl
-                // request to determine what it should be
-                $scheme = parse_url($url, PHP_URL_SCHEME);
-                $host   = parse_url($url, PHP_URL_HOST);
+                // Some canonical tags inappropriately list relative links (i.e /foo.html)
+                // and we want to ensure that they keep the appropriate host+domain
+                $url = $this->ensureSchemeAndHost($ch, $url);
 
-                // If there is a scheme, we can return the url as is
-                if ($scheme && $host) {
-                    return [
-                        'refresh' => false,
-                        'url'     => $url,
-                    ];
-                }
-
-                $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-
-                $parsed = parse_url($url);
-
-                if (!$scheme) {
-                    $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
-                }
-
-                if (!$host) {
-                    $parsed['host'] = parse_url($effective_url, PHP_URL_HOST);
-                }
-
-                // Create a string of the url again
                 return [
                     'refresh' => false,
-                    'url'     => $this->unparseUrl($parsed),
+                    'url'     => $url,
                 ];
             }
         }
@@ -253,6 +245,39 @@ class Mushroom
             'refresh' => false,
             'url'     => $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL),
         ];
+    }
+
+    /**
+     * Makes sure that a relative url like "/foo.html" has it's host and scheme
+     * aka "https://example.com/foo.html".
+     *
+     * @param $ch
+     * @param $url
+     *
+     * @return string
+     */
+    private function ensureSchemeAndHost($ch, $url)
+    {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        $host   = parse_url($url, PHP_URL_HOST);
+
+        if ($scheme && $host) {
+            return $url;
+        }
+
+        $effective_url = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+        $parsed = parse_url($url);
+
+        if (!$scheme) {
+            $parsed['scheme'] = parse_url($effective_url, PHP_URL_SCHEME);
+        }
+
+        if (!$host) {
+            $parsed['host'] = parse_url($effective_url, PHP_URL_HOST);
+        }
+
+        return $this->unparseUrl($parsed);
     }
 
     /**

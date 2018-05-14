@@ -95,6 +95,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
             /// http-refresh links
             ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
+            // Relative url oddities
+            ['https://www.facebook.com/groups/193732801223429/?ref=group_browse_new','https://www.facebook.com/login/'],
         ];
     }
 
