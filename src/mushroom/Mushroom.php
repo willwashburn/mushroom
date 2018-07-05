@@ -19,6 +19,13 @@ class Mushroom
     private $curl;
 
     /**
+     * The default timeout
+     *
+     * @var int
+     */
+    protected $defaultTimeout = 10;
+
+    /**
      * Mushroom constructor.
      *
      * @param Curl|null      $curl
@@ -69,6 +76,15 @@ class Mushroom
         }
 
         return $response;
+    }
+
+    /**
+     * Sets the curl timeout & connecttimeout default value
+     * @param $timeout
+     */
+    public function setDefaultTimeout($timeout)
+    {
+        $this->defaultTimeout = $timeout;
     }
 
     /**
@@ -154,6 +170,8 @@ class Mushroom
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYHOST => false, // suppress certain SSL errors
             CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_CONNECTTIMEOUT => $this->defaultTimeout,
+            CURLOPT_TIMEOUT        => $this->defaultTimeout,
 
             // Some hosts don't respond well if you're a bot so we lie
             // @codingStandardsIgnoreLine
@@ -161,7 +179,7 @@ class Mushroom
             CURLOPT_AUTOREFERER    => true,
 
             // Set the headers to match a browser request
-            CURLOPT_HTTPHEADER => [
+            CURLOPT_HTTPHEADER     => [
                 "Accept: */*",
                 "Cache-Control: max-age=0",
                 "Connection: keep-alive",
@@ -172,7 +190,7 @@ class Mushroom
             ],
 
             // Set the encoding
-            CURLOPT_ENCODING => ''
+            CURLOPT_ENCODING       => '',
         ];
 
         // If we passed in other handle options, add them here
