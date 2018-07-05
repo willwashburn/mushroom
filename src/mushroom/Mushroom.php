@@ -159,6 +159,20 @@ class Mushroom
             // @codingStandardsIgnoreLine
             CURLOPT_USERAGENT      => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:45.0) Gecko/20100101 Firefox/45.0',
             CURLOPT_AUTOREFERER    => true,
+
+            // Set the headers to match a browser request
+            CURLOPT_HTTPHEADER => [
+                "Accept: */*",
+                "Cache-Control: max-age=0",
+                "Connection: keep-alive",
+                "Keep-Alive: 300",
+                "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+                "Accept-Language: en-us,en;q=0.5",
+                "Pragma: ", // browsers keep this blank.
+            ],
+
+            // Set the encoding
+            CURLOPT_ENCODING => ''
         ];
 
         // If we passed in other handle options, add them here

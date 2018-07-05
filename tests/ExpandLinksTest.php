@@ -49,6 +49,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/', 'https://blog.tailwindapp.com/pinterest-smart-feed-pin-visibility/'], // trailing slash
             ['http://wp.me//p7gsPW-Gi', 'https://traveltalesoflife.com/travel-theme-unexpected-the-co-ed-turkish-bath/'],
             ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
+            ['https://www.midgesdaughter.com/just-say-yes-to-cannabis/','https://www.midgesdaughter.com/just-say-yes-to-cannabis/'],
         ];
     }
 
@@ -97,6 +98,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
             // Relative url oddities
             ['https://www.facebook.com/groups/193732801223429/?ref=group_browse_new','https://www.facebook.com/login/'],
+// Timeout issue
+              ['https://www.midgesdaughter.com/just-say-yes-to-cannabis/','https://www.midgesdaughter.com/just-say-yes-to-cannabis/'],
         ];
     }
 
