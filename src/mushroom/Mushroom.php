@@ -1,6 +1,9 @@
 <?php namespace Mushroom;
 
 use Canonical\Canonical;
+use Canonical\Extractor\HtmlTagExtractor;
+use Canonical\Extractor\JavascriptRedirectExtractor;
+use Symfony\Component\DomCrawler\Crawler;
 use WillWashburn\Curl;
 
 /**
@@ -227,7 +230,11 @@ class Mushroom
                 $url = $this->canonical->url(
                     $this->curl->curl_multi_getcontent($ch),
                     [
-                        'http-refresh' => ['meta[http-equiv="refresh"]', 'content'],
+                        new HtmlTagExtractor(
+                            new Crawler(),
+                            ['http-refresh' => ['meta[http-equiv="refresh"]', 'content']]
+                        ),
+                        new JavascriptRedirectExtractor()
                     ]
                 );
 
@@ -239,6 +246,10 @@ class Mushroom
                     // don't believe a non canonical redirect should be stripped or
                     // modified in any way.
                     $url = $url->beforeCleaning();
+
+                    // Some urls from http-refresh tags and javascript redirects will
+                    // be improperly escaped. We'll strip the slashes to avoid issues.
+                    $url = stripcslashes($url);
 
                     // Some http-equiv refresh tags will be for relative links and
                     // we want to ensure that they keep the appropriate host+domain

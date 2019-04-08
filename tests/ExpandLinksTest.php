@@ -1,6 +1,7 @@
 <?php
 
 use Mockery as M;
+use Mushroom\Mushroom;
 
 /**
  * Class ExpandLinkTest.
@@ -15,7 +16,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
      */
     public function test_expand_expands_single_links($input, $expected)
     {
-        $mushroom = new \Mushroom\Mushroom();
+        $mushroom = new Mushroom();
 
         $this->assertEquals($expected, $mushroom->expand($input));
     }
@@ -24,7 +25,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
     {
         $links = $this->linksProvider();
 
-        $mushroom = new \Mushroom\Mushroom();
+        $mushroom = new Mushroom();
 
         $inputs = array_map(function ($value) {
             return $value[0];
@@ -61,14 +62,14 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
      */
     public function test_expand_single_canonical_link($input, $expected)
     {
-        $mushroom = new \Mushroom\Mushroom();
+        $mushroom = new Mushroom();
 
         $this->assertEquals($expected, $mushroom->canonical($input));
     }
 
     public function test_expand_multiple_canonical_link()
     {
-        $mushroom = new \Mushroom\Mushroom();
+        $mushroom = new Mushroom();
         $links    = $this->canonicalLinksProvider();
 
         $inputs = array_map(function ($value) {
@@ -91,15 +92,20 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0/?foo=foobar', 'https://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://blog.tailwindapp.com/tailwind-publisher-2-0?foo=foobar', 'https://blog.tailwindapp.com/tailwind-publisher-2-0/'],
             ['http://www.willwashburn.com/?foo', 'http://willwashburn.com/?foo'], //no tags
-            ['http://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/', 'https://www.practicallyfunctional.com/so-creative-18-delicious-game-day-appetizers/'], // protocol issues
             ['https://vimeo.com/63823593', 'https://vimeo.com/63823593'], // canonical is relative
 
             /// http-refresh links
             ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
+
+            // share-a-sale redirect links
+            ['https://www.caitlinsrecommendedcreations.com/DGYBlueAgateLidCeram','https://www.darngoodyarn.com/products/blue-agate-w-lid-ceramic-yarn-bowl'],
+
             // Relative url oddities
             ['https://www.facebook.com/groups/193732801223429/?ref=group_browse_new','https://www.facebook.com/login/'],
-// Timeout issue
-              ['https://www.midgesdaughter.com/just-say-yes-to-cannabis/','https://www.midgesdaughter.com/just-say-yes-to-cannabis/'],
+
+            // Timeout issue
+            ['https://www.midgesdaughter.com/just-say-yes-to-cannabis/','https://www.midgesdaughter.com/just-say-yes-to-cannabis/'],
+
         ];
     }
 
@@ -129,7 +135,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                }))
                ->getMock();
 
-        $mushroom = new \Mushroom\Mushroom($curl);
+        $mushroom = new Mushroom($curl);
 
         $mushroom->expand('http://www.foobar.com', $expected_curl_opts);
     }

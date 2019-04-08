@@ -28,9 +28,10 @@ Use composer
 
 ```composer require willwashburn/mushroom```
 
-Alternatively, add ```"willwashburn/mushroom": "~2.6"``` to your composer.json
+Alternatively, add ```"willwashburn/mushroom": "~2.7"``` to your composer.json
 
 ## Change Log
+- v2.7.0 - Follow some JS redirects
 - v2.6.0 - Add default timeout to curl options
 - v2.5.1 - Add spoofed browser headers to default curl opts
 - v2.5.0 - Ensure that http-refresh redirects have host and scheme
