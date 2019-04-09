@@ -29,6 +29,14 @@ class Mushroom
     protected $defaultTimeout = 10;
 
     /**
+     * Some domains use Javascript redirects in a non standard way. This is a list
+     * of those domains where we'll attempt to parse js redirects.
+     */
+    private $jsRedirectDomains = [
+        'shareasale-analytics.com'
+    ];
+
+    /**
      * Mushroom constructor.
      *
      * @param Curl|null      $curl
@@ -217,25 +225,50 @@ class Mushroom
     {
         if ($followHttpRefresh) {
             $httpStatusCode = $this->curl->curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $effectiveUrl   = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
             if ($httpStatusCode === 200) {
                 /*
-                 * Some HTML pages use a meta refresh tag as redirection.
-                 *
-                 * i.e.
-                 * <meta http-equiv="refresh" content="5; url=http://example.com/">
-                 *
-                 * Would redirect to http://example.com/ after 5 seconds.
+                * Some HTML pages use a meta refresh tag or a JS call as redirection.
+                *
+                * i.e.
+                * <meta http-equiv="refresh" content="5; url=http://example.com/">
+                *
+                * Would redirect to http://example.com/ after 5 seconds.
+                *
+                * or
+                * <script> window.location('http://example.com'); </script>
+                *
+                * would redirect to http://example.com right away
+                *
+                * An extractor in Canonical is a class that extracts the url from
+                * the html string.
+                *
+                * Since we're only looking for client side redirects, we configure
+                * the exact extractors to use here.
+                *
+                * The first will be to look for http-refresh tags
+                */
+                $canonicalExtractors = [
+                    new HtmlTagExtractor(
+                        new Crawler(),
+                        ['http-refresh' => ['meta[http-equiv="refresh"]', 'content']]
+                    )
+                ];
+
+                /*
+                 * The second will be to check for JS redirects on a domain that
+                 * we know uses non standard JS redirection with no tags
                  */
+                $domain = parse_url($effectiveUrl, PHP_URL_HOST);
+
+                if (in_array($domain, $this->jsRedirectDomains)) {
+                    $canonicalExtractors[] = new JavascriptRedirectExtractor();
+                }
+
                 $url = $this->canonical->url(
                     $this->curl->curl_multi_getcontent($ch),
-                    [
-                        new HtmlTagExtractor(
-                            new Crawler(),
-                            ['http-refresh' => ['meta[http-equiv="refresh"]', 'content']]
-                        ),
-                        new JavascriptRedirectExtractor()
-                    ]
+                    $canonicalExtractors
                 );
 
                 if ($url) {
