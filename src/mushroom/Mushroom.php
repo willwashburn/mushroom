@@ -1,4 +1,6 @@
-<?php namespace Mushroom;
+<?php
+
+namespace Mushroom;
 
 use Canonical\Canonical;
 use Canonical\Extractor\HtmlTagExtractor;
@@ -22,7 +24,7 @@ class Mushroom
     private $curl;
 
     /**
-     * The default timeout
+     * The default timeout.
      *
      * @var int
      */
@@ -33,7 +35,7 @@ class Mushroom
      * of those domains where we'll attempt to parse js redirects.
      */
     private $jsRedirectDomains = [
-        'shareasale-analytics.com'
+        'shareasale-analytics.com',
     ];
 
     /**
@@ -44,7 +46,7 @@ class Mushroom
      */
     public function __construct(Curl $curl = null, Canonical $canonical = null)
     {
-        $this->curl      = is_null($curl) ? new Curl() : $curl;
+        $this->curl = is_null($curl) ? new Curl() : $curl;
         $this->canonical = is_null($canonical) ? new Canonical() : $canonical;
     }
 
@@ -63,16 +65,13 @@ class Mushroom
     }
 
     /**
-     * @param array|string $urls                The url or urls  to unfurl
-     *
-     * @param array        $curlOptions         Custom curl options that can be passed in
-     *
-     * @param bool         $followHttpRefresh   If the response is a 200 response but
-     *                                          includes the meta tag http-refresh, follow
-     *                                          that link to further expand the url
-     *
-     * @param bool         $findCanonical       If the response includes a meta tag for the
-     *                                          canonical url, return that
+     * @param array|string $urls              The url or urls  to unfurl
+     * @param array        $curlOptions       Custom curl options that can be passed in
+     * @param bool         $followHttpRefresh If the response is a 200 response but
+     *                                        includes the meta tag http-refresh, follow
+     *                                        that link to further expand the url
+     * @param bool         $findCanonical     If the response includes a meta tag for the
+     *                                        canonical url, return that
      *
      * @return string|array
      */
@@ -80,7 +79,7 @@ class Mushroom
     {
         $single = !is_array($urls);
 
-        $response =  $this->batchFollow($single ? [$urls] : $urls, $curlOptions, $followHttpRefresh, $findCanonical);
+        $response = $this->batchFollow($single ? [$urls] : $urls, $curlOptions, $followHttpRefresh, $findCanonical);
 
         if ($single) {
             return $response[0];
@@ -90,7 +89,8 @@ class Mushroom
     }
 
     /**
-     * Sets the curl timeout & connecttimeout default value
+     * Sets the curl timeout & connecttimeout default value.
+     *
      * @param $timeout
      */
     public function setDefaultTimeout($timeout)
@@ -131,7 +131,7 @@ class Mushroom
             $this->curl->curl_multi_exec($mh, $running);
         } while ($running);
 
-        $y         = 0;
+        $y = 0;
         $locations = [];
 
         foreach ($urls as $key => $url) {
@@ -191,13 +191,13 @@ class Mushroom
 
             // Set the headers to match a browser request
             CURLOPT_HTTPHEADER     => [
-                "Accept: */*",
-                "Cache-Control: max-age=0",
-                "Connection: keep-alive",
-                "Keep-Alive: 300",
-                "Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-                "Accept-Language: en-us,en;q=0.5",
-                "Pragma: ", // browsers keep this blank.
+                'Accept: */*',
+                'Cache-Control: max-age=0',
+                'Connection: keep-alive',
+                'Keep-Alive: 300',
+                'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+                'Accept-Language: en-us,en;q=0.5',
+                'Pragma: ', // browsers keep this blank.
             ],
 
             // Set the encoding
@@ -225,7 +225,7 @@ class Mushroom
     {
         if ($followHttpRefresh) {
             $httpStatusCode = $this->curl->curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $effectiveUrl   = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            $effectiveUrl = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
 
             if ($httpStatusCode === 200) {
                 /*
@@ -253,7 +253,7 @@ class Mushroom
                     new HtmlTagExtractor(
                         new Crawler(),
                         ['http-refresh' => ['meta[http-equiv="refresh"]', 'content']]
-                    )
+                    ),
                 ];
 
                 /*
@@ -290,7 +290,7 @@ class Mushroom
 
                     return [
                         'refresh' => true,
-                        'url'     => $url
+                        'url'     => $url,
                     ];
                 }
             }
@@ -335,7 +335,7 @@ class Mushroom
     private function ensureSchemeAndHost($ch, $url)
     {
         $scheme = parse_url($url, PHP_URL_SCHEME);
-        $host   = parse_url($url, PHP_URL_HOST);
+        $host = parse_url($url, PHP_URL_HOST);
 
         if ($scheme && $host) {
             return $url;
@@ -365,15 +365,15 @@ class Mushroom
      */
     private function unparseUrl($parsed_url)
     {
-        $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-        $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-        $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-        $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-        $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass'] : '';
-        $pass     = ($user || $pass) ? "$pass@" : '';
-        $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-        $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-        $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+        $scheme = isset($parsed_url['scheme']) ? $parsed_url['scheme'].'://' : '';
+        $host = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+        $port = isset($parsed_url['port']) ? ':'.$parsed_url['port'] : '';
+        $user = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+        $pass = isset($parsed_url['pass']) ? ':'.$parsed_url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+        $query = isset($parsed_url['query']) ? '?'.$parsed_url['query'] : '';
+        $fragment = isset($parsed_url['fragment']) ? '#'.$parsed_url['fragment'] : '';
 
         return "$scheme$user$pass$host$port$path$query$fragment";
     }
