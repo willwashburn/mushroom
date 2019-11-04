@@ -37,6 +37,15 @@ class Mushroom
     ];
 
     /**
+     * Some user-land use cases popped up that required the html of the eventual
+     * curl request we made when finding canonical urls. We expose a method to
+     * get this content in the event someone needs it.
+     *
+     * @var string[]
+     */
+    private $html = [];
+
+    /**
      * Mushroom constructor.
      *
      * @param Curl|null      $curl
@@ -99,6 +108,22 @@ class Mushroom
     }
 
     /**
+     * If we've looked for a url's canonical version, we needed to get the html
+     * of the page. We store that in a cache as sometimes this is useful.
+     *
+     * @param $url
+     *
+     * @return false|string
+     */
+    public function getCachedHtml($url)
+    {
+        if ($this->html[$url]) {
+            return $this->html[$url];
+        }
+        return false;
+    }
+
+    /**
      * @param array $urls              The urls to unfurl
      * @param array $curlOptions       Custom curl options that can be passed in
      * @param bool  $followHttpRefresh If the response is a 200 response but
@@ -142,21 +167,24 @@ class Mushroom
 
         $this->curl->curl_multi_close($mh);
 
-        if ($followHttpRefresh) {
-            $retries = [];
-
-            foreach ($locations as $key => $url) {
-                if (!$url['refresh']) {
-                    $locations[$key] = $url['url'];
-                } else {
-                    $retries[$key] = $url['url'];
-                }
+        $retries = [];
+        foreach ($locations as $key => $url) {
+            if (!$url['refresh']) {
+                $locations[$key] = $url['url'];
+            } else {
+                $retries[$key] = $url['url'];
             }
 
+            if ($url['html']) {
+                $this->html[$urls[$key]] = $url['html'];
+            }
+        }
+
+        if ($followHttpRefresh && count($retries) > 0) {
             if ($retries) {
                 $retried = $this->batchFollow($retries, $curlOptions, false, $findCanonical);
-                foreach ($retries as $key => $url) {
-                    $locations[$key] = $retried[$key]['url'];
+                foreach ($retried as $key => $url) {
+                    $locations[$key] = $url;
                 }
             }
         }
@@ -298,7 +326,8 @@ class Mushroom
 
         if ($findCanonical) {
             // Canonical will read tags to find rel=canonical and og tags
-            $url = $this->canonical->url($this->curl->curl_multi_getcontent($ch));
+            $html = $this->curl->curl_multi_getcontent($ch);
+            $url = $this->canonical->url($html);
 
             if ($url) {
                 // Canonical urls should not include utm params or hash anchors
@@ -313,6 +342,7 @@ class Mushroom
                 return [
                     'refresh' => false,
                     'url'     => $url,
+                    'html'    => $html
                 ];
             }
         }
