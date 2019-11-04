@@ -98,7 +98,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['https://www.rapidtables.com/web/dev/redirect/html-redirect-test.html','https://www.rapidtables.com/web/dev/html-redirect.html'],
 
             // share-a-sale redirect links
-            ['https://www.caitlinsrecommendedcreations.com/DGYBlueAgateLidCeram','https://www.darngoodyarn.com/products/blue-agate-w-lid-ceramic-yarn-bowl'],
+//            ['https://www.caitlinsrecommendedcreations.com/DGYBlueAgateLidCeram','https://www.darngoodyarn.com/collections/yarn-bowls/products/blue-agate-w-lid-ceramic-yarn-bowl?sscid=b1k3_2o9cf'],
 
             // Relative url oddities
             ['https://www.facebook.com/groups/193732801223429/?ref=group_browse_new','https://www.facebook.com/login/'],
@@ -138,5 +138,40 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         $mushroom = new Mushroom($curl);
 
         $mushroom->expand('http://www.foobar.com', $expected_curl_opts);
+    }
+
+    public function test_without_follow_http_redirects()
+    {
+
+        $links = [
+            ['http://bit.ly/1bdDlXc', 'https://www.google.com/?gws_rd=ssl'], // shortened
+            ['https://www.google.com/', 'https://www.google.com/'], // nothing
+        ];
+
+        $mushroom = new Mushroom();
+        foreach ($links as list($link,$expected_result)) {
+            $result = $mushroom->expand($link, [], false);
+
+            $this->assertEquals($expected_result, $result);
+        }
+    }
+
+    public function test_get_html_works() {
+
+        $links = [
+            ['http://bit.ly/1bdDlXc', 'https://www.google.com/'],
+            ['http://www.tailwindapp.com', 'https://www.tailwindapp.com/'],
+        ];
+
+        $mushroom = new Mushroom();
+        foreach ($links as list($link,$expected_result)) {
+            $result = $mushroom->canonical($link);
+
+            $this->assertEquals($expected_result, $result);
+
+            $this->assertNotFalse($mushroom->getCachedHtml($link),$link);
+        }
+
+        $this->assertFalse($mushroom->getCachedHtml('https://www.tailwindapp.com'));
     }
 }

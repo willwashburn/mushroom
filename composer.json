@@ -26,9 +26,9 @@
   "homepage": "https://github.com/willwashburn/mushroom",
   "license": "MIT",
   "require": {
-    "php": ">=5.4.0",
-    "willwashburn/canonical": "~3",
-    "willwashburn/curl": "~1"
+    "php": ">=5.5.0",
+    "willwashburn/curl": "~1",
+    "ext-curl": "*"
   },
   "require-dev": {
     "mockery/mockery": "~0.9",
@@ -40,9 +40,12 @@
     "test": "vendor/bin/phpcs src/ --standard=PSR2 && vendor/bin/phpunit"
   },
   "autoload": {
-    "classmap": [
-      "src"
-    ]
+    "psr-4": {
+      "Mushroom\\": "src/mushroom"
+    }
+  },
+  "config": {
+    "sort-packages": true
   },
   "minimum-stability": "stable"
 }
