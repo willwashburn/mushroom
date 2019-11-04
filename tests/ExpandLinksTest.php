@@ -156,7 +156,8 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function test_get_html_works() {
+    public function test_get_html_works()
+    {
 
         $links = [
             ['http://bit.ly/1bdDlXc', 'https://www.google.com/'],
@@ -169,7 +170,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
             $this->assertEquals($expected_result, $result);
 
-            $this->assertNotFalse($mushroom->getCachedHtml($link),$link);
+            $this->assertNotFalse($mushroom->getCachedHtml($link), $link);
         }
 
         $this->assertFalse($mushroom->getCachedHtml('https://www.tailwindapp.com'));

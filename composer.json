@@ -28,8 +28,8 @@
   "require": {
     "php": ">=5.5.0",
     "willwashburn/curl": "~1",
-    "ext-curl": "*"
-    "willwashburn/canonical": "~3",
+    "ext-curl": "*",
+    "willwashburn/canonical": "~3"
   },
   "require-dev": {
     "mockery/mockery": "~0.9",
