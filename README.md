@@ -31,6 +31,7 @@ Use composer
 Alternatively, add ```"willwashburn/mushroom": "~2.9"``` to your composer.json
 
 ## Change Log
+- v2.9.1 - Fix bug where some html sources were not cached
 - v2.9.0 - Expose HTML for urls when searching canonically
 - v2.8.0 - Only follow JS redirects for whitelisted domains
 - v2.7.0 - Follow some JS redirects

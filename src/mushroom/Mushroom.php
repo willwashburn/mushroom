@@ -251,10 +251,11 @@ class Mushroom
      */
     private function getUrlFromHandle($ch, $followHttpRefresh, $findCanonical)
     {
-        if ($followHttpRefresh) {
-            $httpStatusCode = $this->curl->curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $effectiveUrl   = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        $httpStatusCode = $this->curl->curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $effectiveUrl   = $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        $html           = $this->curl->curl_multi_getcontent($ch);
 
+        if ($followHttpRefresh) {
             if ($httpStatusCode === 200) {
                 /*
                 * Some HTML pages use a meta refresh tag or a JS call as redirection.
@@ -295,7 +296,7 @@ class Mushroom
                 }
 
                 $url = $this->canonical->url(
-                    $this->curl->curl_multi_getcontent($ch),
+                    $html,
                     $canonicalExtractors
                 );
 
@@ -318,7 +319,8 @@ class Mushroom
 
                     return [
                         'refresh' => true,
-                        'url'     => $url
+                        'url'     => $url,
+                        'html'    => $html,
                     ];
                 }
             }
@@ -349,7 +351,8 @@ class Mushroom
 
         return [
             'refresh' => false,
-            'url'     => $this->curl->curl_getinfo($ch, CURLINFO_EFFECTIVE_URL),
+            'url'     => $effectiveUrl,
+            'html'    => $html,
         ];
     }
 
