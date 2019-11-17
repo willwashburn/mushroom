@@ -64,13 +64,23 @@ class Mushroom
      *
      * @return $this
      */
-    public function addJsRedirectDomain(string $domain)
+    public function addJsRedirectDomain($domain)
     {
         $this->jsRedirectDomains[] = $domain;
 
         return $this;
     }
-    
+
+    /**
+     * Get JS Redirect Domains.
+     *
+     * @return array
+     */
+    public function getJsRedirectDomains()
+    {
+        return $this->jsRedirectDomains;
+    }
+
     /**
      * Expands to the canonical url, according to the 'rel=canonical' tag
      * at the end of all redirects for a given link.
