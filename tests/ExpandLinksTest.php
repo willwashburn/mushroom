@@ -185,6 +185,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         $mushroom = new Mushroom();
         $mushroom->addJsRedirectDomain($jsRedirectDomain);
 
-        $this->assertArrayHasKey($jsRedirectDomain, $mushroom->getJsRedirectDomains());
+        $domains = $mushroom->getJsRedirectDomains();
+        $this->assertTrue(in_array($jsRedirectDomain, $domains));
     }
 }
