@@ -28,9 +28,10 @@ Use composer
 
 ```composer require willwashburn/mushroom```
 
-Alternatively, add ```"willwashburn/mushroom": "~2.9"``` to your composer.json
+Alternatively, add ```"willwashburn/mushroom": "~2.10"``` to your composer.json
 
 ## Change Log
+- v2.10.0 - Add method to add a domain to JS Redirect Domains array
 - v2.9.1 - Fix bug where some html sources were not cached
 - v2.9.0 - Expose HTML for urls when searching canonically
 - v2.8.0 - Only follow JS redirects for whitelisted domains
