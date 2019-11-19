@@ -177,4 +177,14 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
 
         $this->assertFalse($mushroom->getCachedHtml('https://www.tailwindapp.com'));
     }
+
+    public function test_add_js_redirect_domain()
+    {
+        $jsRedirectDomain = 'google.com';
+
+        $mushroom = new Mushroom();
+        $mushroom->addJsRedirectDomain($jsRedirectDomain);
+
+        $this->assertArrayHasKey($jsRedirectDomain, $mushroom->getJsRedirectDomains());
+    }
 }
