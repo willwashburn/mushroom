@@ -127,11 +127,11 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
                ->shouldReceive('curl_getinfo')->getMock()
                ->shouldReceive('curl_setopt_array')
                ->with(M::any(), M::on(function ($arg) use ($expected_curl_opts) {
-                   foreach ( array_keys($expected_curl_opts) as $key ) {
-                       if ( $arg[$key] != $expected_curl_opts[$key] ) {
-                           return false;
-                       }
-                   }
+                foreach (array_keys($expected_curl_opts) as $key) {
+                    if ($arg[$key] != $expected_curl_opts[$key]) {
+                        return false;
+                    }
+                }
 
                    return true;
                }))
@@ -151,7 +151,7 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
         ];
 
         $mushroom = new Mushroom();
-        foreach ( $links as list( $link, $expected_result ) ) {
+        foreach ($links as list( $link, $expected_result )) {
             $result = $mushroom->expand($link, [], false);
 
             $this->assertEquals($expected_result, $result);
@@ -164,15 +164,17 @@ class ExpandLinkTest extends PHPUnit_Framework_TestCase
             ['http://bit.ly/1bdDlXc', 'https://www.google.com/'],
             ['http://www.tailwindapp.com', 'https://www.tailwindapp.com/'],
             ['https://diply.com/article/auntyacid/pinterest-diy-easy-solutions', 'https://diply.com/article/auntyacid/pinterest-diy-easy-solutions'],
+            ['https://www.zazzle.com/cookie_monster_cookies_for_santa_dinner_plate-115773106232089655', 'https://www.zazzle.com/cookie_monster_cookies_for_santa_dinner_plate-115773106232089655'],
         ];
 
         $mushroom = new Mushroom();
-        foreach ( $links as list( $link, $expected_result ) ) {
+        foreach ($links as list( $link, $expected_result )) {
             $result = $mushroom->canonical($link);
 
             $this->assertEquals($expected_result, $result);
 
             $this->assertNotFalse($mushroom->getCachedHtml($link), $link);
+            $this->assertNotEmpty($mushroom->getCachedHttpStatusCode($link), $link);
         }
 
         $this->assertFalse($mushroom->getCachedHtml('https://www.tailwindapp.com'));

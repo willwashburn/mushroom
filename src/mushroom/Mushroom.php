@@ -46,6 +46,15 @@ class Mushroom
     private $html = [];
 
     /**
+     * Some user-land use cases popped up that required the response_code of the
+     * eventual curl request we made when finding canonical urls. We expose a
+     * method to get this content in the event someone needs it.
+     *
+     * @var int[]
+     */
+    private $httpStatusCode = [];
+
+    /**
      * Mushroom constructor.
      *
      * @param Curl|null      $curl
@@ -147,6 +156,22 @@ class Mushroom
         return false;
     }
 
+
+    /**
+     * We occasionally can find use in knowing the http status code
+     *
+     * @param $url
+     *
+     * @return bool
+     */
+    public function getCachedHttpStatusCode($url)
+    {
+        if ($this->httpStatusCode[$url]) {
+            return $this->httpStatusCode[$url];
+        }
+        return false;
+    }
+
     /**
      * @param array $urls              The urls to unfurl
      * @param array $curlOptions       Custom curl options that can be passed in
@@ -201,6 +226,10 @@ class Mushroom
 
             if ($url['html']) {
                 $this->html[$urls[$key]] = $url['html'];
+            }
+
+            if ($url['http_status_code']) {
+                $this->httpStatusCode[$urls[$key]] = $url['http_status_code'];
             }
         }
 
@@ -342,9 +371,10 @@ class Mushroom
                     $url = $this->ensureSchemeAndHost($ch, $url);
 
                     return [
-                        'refresh' => true,
-                        'url'     => $url,
-                        'html'    => $html,
+                        'refresh'          => true,
+                        'url'              => $url,
+                        'html'             => $html,
+                        'http_status_code' => $httpStatusCode,
                     ];
                 }
             }
@@ -366,17 +396,19 @@ class Mushroom
                 $url = $this->ensureSchemeAndHost($ch, $url);
 
                 return [
-                    'refresh' => false,
-                    'url'     => $url,
-                    'html'    => $html
+                    'refresh'          => false,
+                    'url'              => $url,
+                    'html'             => $html,
+                    'http_status_code' => $httpStatusCode,
                 ];
             }
         }
 
         return [
-            'refresh' => false,
-            'url'     => $effectiveUrl,
-            'html'    => $html,
+            'refresh'          => false,
+            'url'              => $effectiveUrl,
+            'html'             => $html,
+            'http_status_code' => $httpStatusCode,
         ];
     }
 
